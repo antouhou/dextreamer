@@ -61,6 +61,8 @@ jobs:
           toolchain: stable
           profile: minimal
           override: true
+      - name: Install GStreamer
+        run: sudo apt update && sudo apt install libudev-dev libunwind-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libgstreamer-plugins-bad1.0-dev gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-tools gstreamer1.0-x gstreamer1.0-alsa gstreamer1.0-gl gstreamer1.0-gtk3 gstreamer1.0-qt5 gstreamer1.0-pulseaudio
       - shell: bash
         env:
           CARGO_TOKEN: ${{ secrets.CARGO_TOKEN }}
