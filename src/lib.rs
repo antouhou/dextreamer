@@ -27,7 +27,7 @@
 //! }
 //!
 //! // open a video
-//! let (sender, receiver) = dextreamer::open_video("file:///home/user/my_video.mkv");
+//! let (sender, receiver) = dextreamer::open_video("file:///home/user/my_video.mkv", VideoFrameLoader);
 //!
 //! // Send a play action to the video thread
 //! sender.send(dextreamer::VideoStreamAction::SetPlay).unwrap();

@@ -245,7 +245,15 @@ fn wait_for_video_to_load(playbin_message_bus: &Bus) {
 ///
 /// # Example
 /// ```rust
-/// let (actions_sender, events_receiver) = dextreamer::open_video("file:///home/user/my_video.mkv");
+/// struct VideoFrameLoader;
+///
+/// impl dextreamer::FrameHandler for VideoFrameLoader {
+///    fn handle_new_frame(&self, frame_data: &[u8], frame_size: (u32, u32)) {
+///       println!("New frame: {:?}", frame_size);
+///   }
+/// }
+///
+/// let (actions_sender, events_receiver) = dextreamer::open_video("file:///home/user/my_video.mkv", VideoFrameLoader);
 /// // Now you can use `actions_sender` to send actions to the video thread and `events_receiver` to receive events from the video thread.
 /// ```
 pub fn open_video(
