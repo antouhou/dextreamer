@@ -2,7 +2,7 @@
 
 dextreamer is a sleek and simple wrapper around gstreamer for handling video streams in Rust. While it provides a more straightforward interface, please note that it may not offer the complete functionality of gstreamer.
 
-Developed as a part of the larger project, the Deko UI framework, dextreamer stands alone and does not depend on Deko. It is a separate library that can be utilized independently in any Rust application that requires video streaming capabilities.
+Developed as a part of the larger project, the Daiko UI framework, dextreamer stands alone and does not depend on Deko. It is a separate library that can be utilized independently in any Rust application that requires video streaming capabilities.
 
 ## Installation
 
