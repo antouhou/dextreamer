@@ -7,9 +7,9 @@ use crate::{PlayingState, VideoInfo};
 use gstreamer::Bus;
 use std::sync::mpsc::{self, Receiver, Sender};
 
+use crate::frame_handler::FrameHandler;
 use crate::playbin_query::{audio_tracks, subtitle_tracks, video_duration};
 use std::thread;
-use crate::frame_handler::FrameHandler;
 
 pub(crate) enum InternalMessage {
     VideoStreamAction(VideoStreamAction),
@@ -250,7 +250,7 @@ fn wait_for_video_to_load(playbin_message_bus: &Bus) {
 /// ```
 pub fn open_video(
     uri: impl Into<String>,
-    frame_data_handler: impl FrameHandler + Send + 'static,
+    frame_data_handler: impl FrameHandler + 'static,
 ) -> (Sender<VideoStreamAction>, Receiver<VideoStreamEvent>) {
     // Sender to send messages to the video thread
     let (actions_sender, actions_receiver) = mpsc::channel();
@@ -270,13 +270,14 @@ fn open_video_internal(
     uri: &str,
     receiver: Receiver<VideoStreamAction>,
     sender: Sender<VideoStreamEvent>,
-    frame_data_handler: impl FrameHandler + Send + 'static,
+    frame_data_handler: impl FrameHandler + 'static,
 ) {
     let (internal_sender, internal_receiver) = mpsc::channel::<InternalMessage>();
 
     gst::init().expect("to initialize gstreamer without errors");
 
-    let memory_video_sink = memory_video_sink(internal_sender.clone(), sender.clone(), frame_data_handler);
+    let memory_video_sink =
+        memory_video_sink(internal_sender.clone(), sender.clone(), frame_data_handler);
 
     // Create a new playbin element, and tell it what uri to play back.
     let playbin_pipeline = gst::ElementFactory::make("playbin")

@@ -48,12 +48,12 @@
 //! This library is distributed under the terms of the MIT license.
 //! See [LICENSE](LICENSE) for details.
 
+mod frame_handler;
 mod playbin_query;
 mod streamer;
 mod video_info;
 mod video_sink;
-mod frame_handler;
 
+pub use frame_handler::*;
 pub use streamer::*;
 pub use video_info::*;
-pub use frame_handler::*;

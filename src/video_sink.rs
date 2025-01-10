@@ -1,17 +1,17 @@
+use crate::frame_handler::FrameHandler;
 use crate::streamer::InternalMessage;
-use crate::{FrameData, VideoStreamEvent};
+use crate::VideoStreamEvent;
 use gst::element_error;
 use gstreamer as gst;
 use gstreamer_app as gst_app;
 use gstreamer_app::AppSink;
 use gstreamer_video as gst_video;
 use std::sync::mpsc::Sender;
-use crate::frame_handler::FrameHandler;
 
 pub(crate) fn memory_video_sink(
     internal_sender: Sender<InternalMessage>,
     external_sender: Sender<VideoStreamEvent>,
-    frame_data_handler: impl FrameHandler + Send + 'static,
+    frame_data_handler: impl FrameHandler + 'static,
 ) -> AppSink {
     let video_format = gst_video::VideoCapsBuilder::new()
         .format(gst_video::VideoFormat::Rgba)
@@ -60,9 +60,7 @@ pub(crate) fn memory_video_sink(
 
             frame_data_handler.handle_new_frame(map.as_slice(), (info.width(), info.height()));
 
-            external_sender
-                .send(VideoStreamEvent::NewFrame)
-                .unwrap();
+            external_sender.send(VideoStreamEvent::NewFrame).unwrap();
 
             Ok(gst::FlowSuccess::Ok)
         })
