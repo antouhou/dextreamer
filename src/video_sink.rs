@@ -6,10 +6,12 @@ use gstreamer_app as gst_app;
 use gstreamer_app::AppSink;
 use gstreamer_video as gst_video;
 use std::sync::mpsc::Sender;
+use crate::frame_handler::FrameHandler;
 
 pub(crate) fn memory_video_sink(
     internal_sender: Sender<InternalMessage>,
     external_sender: Sender<VideoStreamEvent>,
+    frame_data_handler: impl FrameHandler + Send + 'static,
 ) -> AppSink {
     let video_format = gst_video::VideoCapsBuilder::new()
         .format(gst_video::VideoFormat::Rgba)
@@ -51,21 +53,15 @@ pub(crate) fn memory_video_sink(
 
             let caps = sample.caps().expect("Expect caps to exist");
             let info = gst_video::VideoInfo::from_caps(caps).expect("Failed to parse caps");
-            let frame_size = [info.width() as usize, info.height() as usize];
 
             internal_sender
                 .send(InternalMessage::RequestPositionUpdate)
                 .unwrap();
 
-            let bytes = map.as_slice().to_vec();
+            frame_data_handler.handle_new_frame(map.as_slice(), (info.width(), info.height()));
 
-            // TODO: this is really inefficient as it copies data from the GPU to the CPU memory.
-            //  Figure out how to pass a reference to a GPU memory as and addition to copying it.
             external_sender
-                .send(VideoStreamEvent::NewFrame(FrameData {
-                    data: bytes,
-                    size: frame_size,
-                }))
+                .send(VideoStreamEvent::NewFrame)
                 .unwrap();
 
             Ok(gst::FlowSuccess::Ok)

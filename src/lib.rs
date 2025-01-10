@@ -17,6 +17,15 @@
 //! use std::sync::mpsc;
 //! use dextreamer;
 //!
+//! struct VideoFrameLoader;
+//!
+//! impl dextreamer::FrameHandler for VideoFrameLoader {
+//!     fn handle_new_frame(&self, frame_data: &[u8], frame_size: (u32, u32)) {
+//!         println!("New frame: {:?}", frame_size);
+//!     }
+//!
+//! }
+//!
 //! // open a video
 //! let (sender, receiver) = dextreamer::open_video("file:///home/user/my_video.mkv");
 //!
@@ -26,7 +35,7 @@
 //! // Receive events from the video thread
 //! match receiver.recv().unwrap() {
 //!     dextreamer::VideoStreamEvent::VideoLoaded(info) => println!("Video loaded: {:?}", info),
-//!     dextreamer::VideoStreamEvent::NewFrame(frame) => println!("New frame: {:?}", frame),
+//!     dextreamer::VideoStreamEvent::NewFrame => println!("New frame"),
 //!     _ => (),
 //! }
 //! ```
@@ -39,11 +48,12 @@
 //! This library is distributed under the terms of the MIT license.
 //! See [LICENSE](LICENSE) for details.
 
-mod event_debounce;
 mod playbin_query;
 mod streamer;
 mod video_info;
 mod video_sink;
+mod frame_handler;
 
 pub use streamer::*;
 pub use video_info::*;
+pub use frame_handler::*;
